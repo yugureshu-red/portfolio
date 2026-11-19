@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tasklets в Arcanum (Яндекс) — кейс · Алексей Шуклин</title>
+  <meta name="description" content="Перенос сервиса асинхронного запуска кода Tasklets в портал разработчика Яндекса Arcanum и новая точка входа по данным о поведении: −2 клика для 96% пользователей.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Tasklets в Arcanum: два клика, которые разработчики делали каждый день">
+  <meta property="og:description" content="Яндекс, DevTools. Новая точка входа по данным: −2 клика в главном сценарии для 96% пользователей.">
+  <meta property="og:image" content="../assets/img/tasklets/list.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#0a0a0b">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%2316161a'/%3E%3Cpath d='M4 28 28 4' stroke='%23ff6a2b' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/styles.css?v=20">
+</head>
+<body>
+<a class="skip-link" href="#main">Перейти к содержимому</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="me" href="../index.html" aria-label="Алексей Шуклин — на главную">
+      <img src="../assets/img/portrait.jpg" alt="" width="32" height="32">
+      <strong>Алексей Шуклин</strong><span>Senior Product Designer</span>
+    </a>
+    <nav class="nav" aria-label="Основная навигация">
+      <a href="../index.html#cases">Кейсы</a>
+      <a href="../index.html#approach">Подход</a>
+      <a href="../index.html#leadership">Лидерство</a>
+      <a href="../index.html#experience">Опыт</a>
+    </nav>
+    <div class="header-cta">
+      <a class="icon-btn" href="https://t.me/yugureshu" target="_blank" rel="noopener" aria-label="Написать в Telegram">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.4 3.6 2.9 10.7c-1.2.5-1.2 1.2-.2 1.5l4.7 1.5 1.8 5.6c.2.6.1.9.8.9.5 0 .7-.2 1-.5l2.3-2.2 4.8 3.5c.9.5 1.5.2 1.7-.8l3.1-14.7c.3-1.3-.5-1.9-1.5-1.4ZM8.6 13.4l9.2-5.8c.5-.3.9-.1.5.2l-7.6 6.9-.3 3.2-1.8-4.5Z"/></svg>
+      </a>
+      <a class="btn btn-sm" href="../assets/Aleksei_Shuklin_Senior_Product_Designer.pdf" download>CV · PDF</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <section class="case-hero">
+    <div class="wrap">
+      <a class="back" href="../index.html#cases">← Все кейсы</a>
+      <p class="eyebrow"><b>Яндекс</b> · DevTools · внутренний сервис</p>
+      <h1>Tasklets в Arcanum: два клика, которые разработчики делали каждый день</h1>
+      <p class="lead">Tasklets — сервис асинхронного запуска кода, которым пользуются более 11 000 разработчиков Яндекса. Его нужно было перенести в единый портал разработчика Arcanum. Я использовал переезд, чтобы перестроить вход в сервис вокруг самого частого сценария.</p>
+
+      <dl class="meta">
+        <div><dt>Роль</dt><dd>Дизайнер продукта</dd></div>
+        <div><dt>Команда</dt><dd>10+: продакты, аналитики, архитекторы, разработка</dd></div>
+        <div><dt>Платформа</dt><dd>Web</dd></div>
+        <div><dt>Период</dt><dd>09–12.2025</dd></div>
+        <div><dt>Пользователи</dt><dd>11 000+ разработчиков</dd></div>
+      </dl>
+
+      <div class="tldr" id="tldr">
+        <div class="tldr-head"><span class="eyebrow">Коротко — за 30 секунд</span><span class="eyebrow">TL;DR</span></div>
+        <div class="tldr-grid">
+          <div><h3>Контекст</h3><p>Яндекс собирает инструменты разработчика в единый портал Arcanum. Tasklets жил отдельно, со своими паттернами интерфейса.</p></div>
+          <div><h3>Моя роль</h3><p>36 интервью, 7 проверенных гипотез, анализ тепловой карты, перенос на паттерны Arcanum, новая точка входа и упрощение экрана логов.</p></div>
+          <div><h3>Ключевое решение</h3><p><strong>Стартовым экраном сделать сценарий, ради которого приходят 96%,</strong> вместо ярлыка поверх старой навигации.</p></div>
+          <div><h3>Результат</h3><p><strong>−2 клика</strong> в главном сценарии для 96% пользователей — <strong>3–10 секунд</strong> на каждом запуске.</p></div>
+        </div>
+      </div>
+
+      <figure class="cover">
+        <img src="../assets/img/tasklets/cover.jpg" alt="Экран запусков тасклета в Arcanum: список запусков со статусами Crashed и Success" width="2400" height="1825">
+      </figure>
+    </div>
+  </section>
+
+  <div class="wrap case-layout">
+    <nav class="toc" aria-label="Содержание кейса">
+      <ol>
+        <li><a href="#results">Результаты</a></li>
+        <li><a href="#context">Контекст</a></li>
+        <li><a href="#research">Исследование</a></li>
+        <li><a href="#decisions">Развилки</a></li>
+        <li><a href="#solution">Решение</a></li>
+        <li><a href="#retro">Что сделал бы иначе</a></li>
+      </ol>
+    </nav>
+
+    <div>
+      <section class="block" id="results">
+        <p class="eyebrow">01 · Результаты</p>
+        <h2>Что изменилось и как это измерено</h2>
+        <div class="metrics">
+          <article class="metric">
+            <div class="value">−2 <small>клика</small></div>
+            <p class="label">в главном сценарии для 96% пользователей</p>
+            <dl><div><dt>Как нашли</dt><dd>Тепловая карта показала, что старт сценария выстроен неверно.</dd></div><div><dt>Оговорка</dt><dd>Клики — прокси. Рядом они переведены во время, потому что разработчика интересуют секунды.</dd></div></dl>
+          </article>
+          <article class="metric">
+            <div class="value">3–10 <small>с</small></div>
+            <p class="label">экономии на каждом запуске</p>
+            <dl><div><dt>Откуда</dt><dd>Два убранных клика на старте сценария.</dd></div></dl>
+          </article>
+          <article class="metric">
+            <div class="value">7</div>
+            <p class="label">гипотез проверено</p>
+            <dl><div><dt>Откуда</dt><dd>36 глубинных интервью с разработчиками.</dd></div><div><dt>Что дало</dt><dd>По результатам расставил приоритеты в бэклоге.</dd></div></dl>
+          </article>
+          <article class="metric is-caveat">
+            <div class="value">96%</div>
+            <p class="label">приходят в сервис с одной и той же целью</p>
+            <dl><div><dt>Почему важно</dt><dd>Это не результат, а наблюдение, на котором построено решение.</dd></div></dl>
+          </article>
+        </div>
+      </section>
+
+      <section class="block" id="context">
+        <p class="eyebrow">02 · Контекст и задача</p>
+        <h2>Переезд, который можно было сделать «как есть»</h2>
+        <ul class="bullets prose">
+          <li><b>Перенести в Arcanum.</b> Сервис нужно было встроить в единый портал разработчика с учётом его дизайна и паттернов.</li>
+          <li><b>Выиграть секунды.</b> Разработчики заходят в Tasklets много раз в день, поэтому каждый лишний шаг умножается на тысячи людей.</li>
+          <li><b>Снизить когнитивную нагрузку.</b> Экран с логами ошибок был перегружен второстепенной информацией.</li>
+        </ul>
+        <div class="prose"><p>Самый быстрый путь — перенести экраны один к одному и перекрасить их под Arcanum. Я предложил сначала провести исследование: переезд — редкий момент, когда навигацию можно поменять без сопротивления привычки.</p></div>
+      </section>
+
+      <section class="block" id="research">
+        <p class="eyebrow">03 · Исследование</p>
+        <h2>Зачем на самом деле приходят в Tasklets</h2>
+        <div class="methods">
+          <span class="method"><b>36</b> глубинных интервью с разработчиками</span>
+          <span class="method"><b>Тепловая карта</b> и метрики сценариев</span>
+          <span class="method"><b>7</b> гипотез, проверенных на пользователях</span>
+          <span class="method"><b>Аудит</b> паттернов Arcanum</span>
+          <span class="method"><b>Тест</b> прототипа новой точки входа</span>
+        </div>
+        <ol class="insights">
+          <li class="insight">
+            <div class="found"><b>96% сессий начинаются с одного действия</b><p>Открыть свой тасклет и посмотреть последние запуски. Обзор и настройки открывали редко.</p></div>
+            <div class="so"><p class="eyebrow">Что это значит для дизайна</p><p>Стартовый экран — список запусков, а не обзор сервиса. Остальное доступно в соседних вкладках.</p></div>
+          </li>
+          <li class="insight">
+            <div class="found"><b>Упавший запуск разбирают по логу</b><p>Чтобы найти причину ошибки, разработчик пролистывает служебную информацию, которая нужна в редких случаях.</p></div>
+            <div class="so"><p class="eyebrow">Что это значит для дизайна</p><p>Статус Crashed на первом плане, ID запуска сразу ведёт к логу, второстепенные поля свёрнуты.</p></div>
+          </li>
+          <li class="insight">
+            <div class="found"><b>Пользователи уже знают Arcanum</b><p>Собственные паттерны Tasklets заставляли переключаться: таблицы, фильтры и действия работали иначе, чем в соседних сервисах портала.</p></div>
+            <div class="so"><p class="eyebrow">Что это значит для дизайна</p><p>Перенос на паттерны Arcanum без исключений, даже там, где старое решение было локально удобнее.</p></div>
+          </li>
+        </ol>
+
+        <div class="thinking">
+          <p class="eyebrow">Как я рассуждал</p>
+          <p><b>Переезд — редкое окно, чтобы поменять навигацию.</b> Обычно смена точки входа упирается в привычку. Но когда сервис всё равно переезжает в новый портал, люди ждут изменений. Перенести экраны один к одному было бы упущенной возможностью.</p>
+          <p><b>Тепловая карта сказала «что», интервью — «почему».</b> Карта показала, что почти все сразу уходят с обзора к списку запусков. Интервью объяснили причину: разработчик приходит не «посмотреть сервис», а проверить свой последний запуск. Этот сценарий и стал точкой входа.</p>
+          <p><b>Путь большинства — без ущерба для меньшинства.</b> 4% пользователей нужен обзор. Вместо компромиссного экрана «для всех» я сделал вход для 96%, а для остальных — запоминание последней открытой вкладки.</p>
+        </div>
+      </section>
+
+      <section class="block" id="decisions">
+        <p class="eyebrow">04 · Развилки</p>
+        <h2>Ярлык или новая точка входа</h2>
+        <article class="decision">
+          <div class="decision-head"><span class="eyebrow">Развилка 1</span><h3>Как ускорить главный сценарий</h3></div>
+          <div class="options">
+            <div class="option rejected"><h4><span class="pill no">Отказались</span>Ярлык «Последние запуски»</h4><p>Добавить быструю ссылку на старый стартовый экран. Безопасно и ничего не ломает.</p></div>
+            <div class="option"><h4><span class="pill yes">Выбрали</span>Сменить точку входа</h4><p>Сервис открывается сразу на экране запусков, а обзор переезжает в соседнюю вкладку.</p></div>
+          </div>
+          <div class="decision-why">
+            <div><b>Почему</b>Ярлык добавил бы элемент на экран и сохранил лишний шаг для 96% людей. Оптимизировать нужно путь большинства, а не добавлять ещё один.</div>
+            <div><b>Цена решения</b>4% пользователей, которым нужен обзор, делают на один клик больше. Чтобы смягчить это, сервис запоминает последнюю открытую вкладку.</div>
+          </div>
+        </article>
+        <article class="decision">
+          <div class="decision-head"><span class="eyebrow">Развилка 2</span><h3>Свои паттерны или паттерны портала</h3></div>
+          <div class="options">
+            <div class="option rejected"><h4><span class="pill no">Отказались</span>Сохранить привычное</h4><p>Оставить уникальные элементы Tasklets, к которым пользователи уже привыкли.</p></div>
+            <div class="option"><h4><span class="pill yes">Выбрали</span>Паттерны Arcanum</h4><p>Таблицы, фильтры, вкладки и действия — как во всём портале.</p></div>
+          </div>
+          <div class="decision-why">
+            <div><b>Почему</b>Разработчик проводит в Arcanum весь день. Единое поведение интерфейса снижает нагрузку сильнее, чем локальная оптимизация одного сервиса.</div>
+            <div><b>Цена решения</b>Часть привычных элементов пришлось переучивать. Об изменениях заранее сообщили в каналах пользователей сервиса.</div>
+          </div>
+        </article>
+      </section>
+
+      <section class="block" id="solution">
+        <p class="eyebrow">05 · Решение</p>
+        <h2>Как это выглядит</h2>
+        <figure class="figure">
+          <div class="figure-frame">
+            <img src="../assets/img/tasklets/runs.jpg" alt="Экран запусков тасклета: вкладки Execution, Labels, Builds, Documentation, Statistics и таблица запусков" width="2400" height="1350" loading="lazy">
+          </div>
+          <figcaption>
+            <p class="cap-title">Экран запусков<span>Теперь открывается сразу</span></p>
+            <ol class="annotations two">
+              <li><b>Вкладка Execution — стартовая:</b> список запусков без промежуточных экранов.</li>
+              <li><b>Статус на первом плане:</b> Crashed и Success различаются цветом и текстом.</li>
+              <li><b>ID запуска ведёт к логу:</b> один клик от списка до причины ошибки.</li>
+              <li><b>Остальное — во вкладках:</b> Labels, Builds, Documentation, Statistics.</li>
+            </ol>
+          </figcaption>
+        </figure>
+
+        <figure class="figure">
+          <div class="figure-frame">
+            <img src="../assets/img/tasklets/list.jpg" alt="Список тасклетов, сгруппированный по проектам, в боковой навигации Arcanum" width="2400" height="1500" loading="lazy">
+          </div>
+          <figcaption>
+            <p class="cap-title">Список тасклетов<span>В навигации портала</span></p>
+            <ol class="annotations">
+              <li><b>Сервис в общей навигации Arcanum</b> рядом с Code, CI и Load testing — без перехода в отдельный инструмент.</li>
+              <li><b>Тасклеты сгруппированы по проектам</b> деревом, как и другие сущности портала.</li>
+            </ol>
+          </figcaption>
+        </figure>
+
+        <figure class="figure dark tall">
+          <div class="figure-frame">
+            <img src="../assets/img/tasklets/execution.jpg" alt="Варианты экрана запуска и лога ошибок" width="1600" height="2740" loading="lazy">
+          </div>
+          <figcaption>
+            <p class="cap-title">Экран запуска и лога<span>Итерации упрощения</span></p>
+            <ol class="annotations">
+              <li><b>Убрал второстепенную информацию</b> из первого экрана запуска: она свёрнута и доступна по запросу.</li>
+              <li><b>Лог ошибки ближе к началу,</b> чтобы разработчик видел причину без прокрутки.</li>
+            </ol>
+          </figcaption>
+        </figure>
+      </section>
+
+      <section class="block" id="retro">
+        <p class="eyebrow">06 · Ретроспектива</p>
+        <h2>Что я сделал бы иначе</h2>
+        <ol class="retro">
+          <li><div><b>Мерил бы время, а не клики</b><p>Клики легко посчитать, но это прокси. Время до первого целевого действия точнее показывает эффект и понятнее бизнесу.</p></div></li>
+          <li><div><b>Проверил бы 4% отдельно</b><p>Пользователей, которым нужен обзор, я учёл запоминанием вкладки, но не опросил отдельно после запуска.</p></div></li>
+        </ol>
+        <div class="summary" style="margin-top:var(--gap)">
+          <p>Главный вывод: в инструментах разработчика самое ценное — не новые функции, а убранные шаги в сценарии, который повторяется сотни раз в день. Переезд был поводом это сделать.</p>
+        </div>
+      </section>
+
+      <section class="block">
+        <p class="eyebrow">Другие кейсы</p>
+        <div class="next" style="margin-top:16px">
+          <a href="mes-metiz.html"><img src="../assets/img/home/mes.jpg" alt="" width="1600" height="900" loading="lazy"><span class="eyebrow">Северсталь · MES</span><b>MES «Северсталь-метиз»</b><span class="m">−31% времени работы с системой</span></a>
+          <a href="marketplace.html"><img src="../assets/img/home/market.jpg" alt="" width="1600" height="900" loading="lazy"><span class="eyebrow">Северсталь · E-commerce</span><b>Продажа складских остатков</b><span class="m">+48% продаж год к году</span></a>
+          <a href="allforms.html"><img src="../assets/img/home/allforms.jpg" alt="" width="1600" height="900" loading="lazy"><span class="eyebrow">Северсталь · платформа</span><b>AllForms</b><span class="m">−30% времени на создание опроса</span></a>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <section class="section contact" id="contact" aria-labelledby="contact-title">
+    <div class="wrap">
+      <div class="tile">
+        <p class="eyebrow" style="margin-bottom:16px">Контакты</p>
+        <h2 id="contact-title">Делаете инструменты для разработчиков?</h2>
+        <p class="sub">Ищу роль Senior Product Designer. Расскажу на звонке, как считал эффект и что не вошло в кейс.</p>
+        <div class="btn-row center">
+          <a class="btn btn-primary" href="https://t.me/yugureshu" target="_blank" rel="noopener">Написать в Telegram <span class="arr" aria-hidden="true">→</span></a>
+          <a class="btn" href="mailto:redhead-ka@yandex.ru">redhead-ka@yandex.ru</a>
+        </div>
+        <ul class="chips center">
+          <li><a class="chip" href="../assets/Aleksei_Shuklin_Senior_Product_Designer.pdf" download>Резюме · PDF</a></li>
+          <li><a class="chip" href="https://www.linkedin.com/in/%D0%B0%D0%BB%D0%B5%D0%BA%D1%81%D0%B5%D0%B9-%D1%88%D1%83%D0%BA%D0%BB%D0%B8%D0%BD-abb809121/" target="_blank" rel="noopener">LinkedIn ↗</a></li>
+          <li><a class="chip" href="../index.html#cases">Все кейсы</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© <span data-year>2026</span> Алексей Шуклин</span>
+    <span>Москва · <span data-clock>--:--</span></span>
+  </div>
+</footer>
+
+<script src="../assets/main.js?v=4"></script>
+</body>
+</html>
